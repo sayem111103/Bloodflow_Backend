@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import bcrypt from "bcrypt";
 import ms from "ms";
+import crypto from "crypto";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../error/AppError.js";
 import { TLogin } from "./auth.interface.js";
@@ -9,6 +10,7 @@ import { config } from "../../config/config.js";
 import { createToken, verifyToken } from "../../utils/auth.utils..js";
 import { userServices } from "../user/user.service.js";
 import { UserRole } from "../../../generated/enums.js";
+import { sendResetPasswordEmail } from "../../utils/sendResetPasswordEmail.js";
 
 const login = async (payload: TLogin) => {
   const user = await userServices.isUserExist(payload.email);
@@ -116,4 +118,70 @@ const ChangePassword = async (
   return result.updatedAt;
 };
 
-export const authServices = { login, RefreshToken, ChangePassword };
+const RESET_TOKEN_VALIDITY_MS = 60 * 60 * 1000; // 1 hour
+
+const hashToken = (token: string) =>
+  crypto.createHash("sha256").update(token).digest("hex");
+
+const forgotPassword = async (email: string) => {
+  const user = await userServices.isUserExist(email);
+  // Always return normally even if the email doesn't exist —
+  // otherwise this endpoint leaks which emails are registered.
+  if (!user) return null;
+
+  const rawToken = crypto.randomBytes(32).toString("hex");
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      resetPasswordToken: hashToken(rawToken),
+      resetPasswordExpiry: new Date(Date.now() + RESET_TOKEN_VALIDITY_MS),
+    },
+  });
+
+  const resetLink = `${config.origin}/reset-password?token=${rawToken}`;
+
+  await sendResetPasswordEmail({
+    email: user.email,
+    username: user.fullName || user.username,
+    resetLink,
+  });
+
+  return null;
+};
+
+const resetPassword = async (token: string, newPassword: string) => {
+  const hashedIncomingToken = hashToken(token);
+
+  const user = await prisma.user.findFirst({
+    where: {
+      resetPasswordToken: hashedIncomingToken,
+      resetPasswordExpiry: { gt: new Date() },
+    },
+  });
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This reset link is invalid or has expired.",
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.salt_rounds),
+  );
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpiry: null,
+    },
+  });
+
+  return null;
+};
+
+export const authServices = { login, RefreshToken, ChangePassword, forgotPassword, resetPassword };
