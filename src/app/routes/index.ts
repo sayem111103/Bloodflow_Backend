@@ -4,7 +4,7 @@ import { authRoute } from "../modules/auth/auth.route.js";
 import { bloodRequestRoute } from "../modules/blood/blood.route.js";
 import { blogRoute } from "../modules/blog/blog.route";
 import { eventRoute } from "../modules/event/event.route";
-import { notificationRoutes } from "../modules/notification/notification.route.js";
+import { notificationRoute } from "../modules/notification/notification.route";
 
 const router = Router();
 const moduleRoute = [
@@ -28,9 +28,9 @@ const moduleRoute = [
     path: "/event",
     route: eventRoute,
   },
-  {
+  { 
     path: "/notification",
-    route: notificationRoutes,
+    route: notificationRoute 
   },
 ];
 

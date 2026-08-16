@@ -43,6 +43,19 @@ router.get(
   ),
   userController.getMe,
 );
+
+router.patch(
+  "/update-profile",
+  auth(
+    UserRole.ADMIN,
+    UserRole.BLOOD_BANK_MANAGER,
+    UserRole.HOSPITAL_REPRESENTATIVE,
+    UserRole.USER,
+  ),
+  validation(userValidation.updateMyProfileValidation),
+  userController.updateMyProfile,
+);
+
 router.get("/get-all-users", auth(UserRole.ADMIN), userController.getAllUsers);
 
 router.get("/donors", userController.getAllDonors);

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserRole, UserStatus } from "../../../generated/enums";
+import { BloodGroup, UserRole, UserStatus } from "../../../generated/enums";
 
 const userValidationSchema = z.object({
   body: z.object({
@@ -11,21 +11,54 @@ const userValidationSchema = z.object({
   }),
 });
 
-const userUpdateValidation = z.object({
-  body: z.object({
-    role: z.enum(UserRole).optional(),
-    status: z.enum(UserStatus).optional(),
-  }),
-});
+const updateMyProfileValidation = z
+  .object({
+    body: z.object({
+      currentPassword: z.string().min(1, "Current password is required"),
 
+      status: z.enum(UserStatus).optional(),
+
+      phoneNumber: z.string().min(1).max(30).optional(),
+
+      guardianNumber: z.string().max(30).optional().or(z.literal("")),
+
+      state: z.string().min(1).max(100).optional(),
+
+      district: z.string().min(1).max(100).optional(),
+
+      town: z.string().min(1).max(100).optional(),
+
+      address: z.string().max(500).optional().or(z.literal("")),
+
+      img: z
+        .string()
+        .url("Image must be a valid URL")
+        .optional()
+        .or(z.literal("")),
+    }),
+  })
+  
+  .refine(
+    (data) => {
+      const { currentPassword, ...updates } = data.body;
+
+      return Object.keys(updates).length > 0;
+    },
+    {
+      message: "At least one profile field must be provided",
+      path: ["body"],
+    },
+  );
 const verifyUserValidationSchema = z.object({
   body: z.object({
     email: z.email({ message: "Invalid email" }),
-    verifyCode: z.string().length(6, { message: "Code must be 6 digits" }),
+    verifyCode: z.string().length(6, {
+      message: "Code must be 6 digits",
+    }),
   }),
 });
 
-export const resendVerificationCodeValidationSchema = z.object({
+const resendVerificationCodeValidationSchema = z.object({
   body: z.object({
     email: z.email({ message: "Invalid email" }),
   }),
@@ -33,7 +66,7 @@ export const resendVerificationCodeValidationSchema = z.object({
 
 export const userValidation = {
   userValidationSchema,
-  userUpdateValidation,
+  updateMyProfileValidation,
   verifyUserValidationSchema,
   resendVerificationCodeValidationSchema,
 };

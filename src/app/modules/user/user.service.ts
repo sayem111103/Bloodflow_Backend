@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import AppError from "../../error/AppError";
 import { prisma } from "../../DB/prisma";
 import { config } from "../../config/config";
-import { BloodGroup, Prisma, UserRole } from "../../../generated/client";
+import { BloodGroup, Prisma, UserRole, UserStatus } from "../../../generated/client";
 import { sendVerificationEmail } from "../../utils/sendVarificationEmail";
 
 type TCreateUserPayload = {
@@ -197,6 +197,134 @@ const verifyUserIntoDB = async (payload: {
   return result;
 };
 
+const updateMyProfile = async (
+  userId: string,
+  payload: {
+    currentPassword: string;
+    status?: UserStatus;
+    phoneNumber?: string;
+    guardianNumber?: string;
+    state?: string;
+    district?: string;
+    town?: string;
+    address?: string;
+    img?: string;
+  },
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      profile: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Verify current password
+  const passwordMatched = await isPasswordMatched(
+    payload.currentPassword,
+    user.password,
+  );
+
+  if (!passwordMatched) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Current password is incorrect",
+    );
+  }
+
+  const {
+    currentPassword,
+    status,
+    phoneNumber,
+    guardianNumber,
+    state,
+    district,
+    town,
+    address,
+    img,
+  } = payload;
+
+  // Prevent unused variable warning
+  void currentPassword;
+
+  const userUpdateData: Prisma.UserUpdateInput = {};
+
+  const profileUpdateData: Prisma.UserProfileUpdateInput = {};
+
+  // User fields
+  if (status !== undefined) {
+    userUpdateData.status = status;
+  }
+
+  // Profile fields
+  if (phoneNumber !== undefined) {
+    profileUpdateData.phoneNumber = phoneNumber;
+  }
+
+  if (guardianNumber !== undefined) {
+    profileUpdateData.guardianNumber = guardianNumber || null;
+  }
+
+  if (state !== undefined) {
+    profileUpdateData.state = state;
+  }
+
+  if (district !== undefined) {
+    profileUpdateData.district = district;
+  }
+
+  if (town !== undefined) {
+    profileUpdateData.town = town;
+  }
+
+  if (address !== undefined) {
+    profileUpdateData.address = address || null;
+  }
+
+  if (img !== undefined) {
+    profileUpdateData.img = img || null;
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    if (Object.keys(userUpdateData).length > 0) {
+      await tx.user.update({
+        where: {
+          id: userId,
+        },
+        data: userUpdateData,
+      });
+    }
+
+    if (user.profileId && Object.keys(profileUpdateData).length > 0) {
+      await tx.userProfile.update({
+        where: {
+          id: user.profileId,
+        },
+        data: profileUpdateData,
+      });
+    }
+
+    return tx.user.findUnique({
+      where: {
+        id: userId,
+      },
+      omit: {
+        password: true,
+      },
+      include: {
+        profile: true,
+      },
+    });
+  });
+
+  return result;
+};
+
 const resendVerificationCodeIntoDB = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -346,6 +474,7 @@ export const userServices = {
   isPasswordMatched,
   createUserIntoDB,
   getMe,
+  updateMyProfile,
   verifyUserIntoDB,
   resendVerificationCodeIntoDB,
   getAllUsersFromDB,

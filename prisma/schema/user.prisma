@@ -13,6 +13,8 @@ model User {
   isVerified             Boolean                @default(false)
   verifyCode             String?
   verifyCodeExpiry       DateTime?
+  resetPasswordToken     String?
+  resetPasswordExpiry    DateTime?
   blogs                  Blog[]
   donationsGiven         BloodDonationHistory[] @relation("Donor")
   donationsReceived      BloodDonationHistory[] @relation("Recipient")
@@ -21,7 +23,8 @@ model User {
   notificationsCreatedBy Notification[]         @relation("NotificationsCreatedBy")
   notificationsSendTo    Notification[]         @relation("NotificationsSendTo")
   profile                UserProfile?           @relation(fields: [profileId], references: [id])
-
+  notificationReads      NotificationRead[]
+  
   @@map("Users")
 }
 

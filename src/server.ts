@@ -18,7 +18,12 @@ async function main() {
     console.log(err);
   }
 }
-main();
+
+// Only run a real listening server + seeding locally.
+// On Vercel, the exported `app` is called directly per-request instead.
+if (!process.env.VERCEL) {
+  main();
+}
 
 process.on("unhandledRejection", () => {
   console.log(`unhandledRejection is detected, shutting down ...`);
@@ -32,3 +37,5 @@ process.on("uncaughtException", () => {
   console.log(`uncaughtException is detected, shutting down ...`);
   process.exit(1);
 });
+
+export default app;

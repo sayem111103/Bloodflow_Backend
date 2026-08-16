@@ -122,6 +122,8 @@ const acceptBloodRequest = async (
     );
   }
 
+  const donor = await prisma.user.findUnique({ where: { id: donorId } });
+
   const remaining = request.unitsNeeded - unitsDonated;
 
   const result = await prisma.$transaction(async (tx) => {
@@ -132,7 +134,7 @@ const acceptBloodRequest = async (
         reqId: requestId,
         unitDonated: unitsDonated,
         otp: generateOTP(),
-        status: "IN_PROGRESS", 
+        status: "IN_PROGRESS",
         otpExpiresAt: new Date(Date.now() + otp_ValidityDuration),
       },
     });
@@ -142,6 +144,15 @@ const acceptBloodRequest = async (
       data: {
         unitsNeeded: remaining,
         status: remaining === 0 ? "IN_PROGRESS" : "PENDING",
+      },
+    });
+
+    await tx.notification.create({
+      data: {
+        message: `${donor?.fullName || donor?.username || "A donor"} has offered to donate ${unitsDonated} unit(s) for your blood request.`,
+        createdById: donorId,
+        sendToId: request.requesterId,
+        status: "SPECIFIC",
       },
     });
 

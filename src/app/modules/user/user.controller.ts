@@ -47,6 +47,19 @@ const getMe: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const updateMyProfile: RequestHandler = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const result = await userServices.updateMyProfile(userId, req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Profile updated successfully",
+    data: result,
+  });
+});
+
 const verifyUser: RequestHandler = catchAsync(async (req, res) => {
   const result = await userServices.verifyUserIntoDB(req.body);
   sendResponse(res, {
@@ -131,6 +144,7 @@ export const userController = {
   createUser,
   adminCreateUser,
   getMe,
+  updateMyProfile,
   verifyUser,
   resendVerificationCode,
   getAllUsers,
