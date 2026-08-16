@@ -1,24 +1,26 @@
 model User {
-  id                String                 @id @default(uuid())
-  username          String                 @unique
-  password          String
-  email             String                 @unique
-  status            UserStatus             @default(ACTIVE)
-  role              UserRole
-  isDeleted         Boolean                @default(false)
-  createdAt         DateTime               @default(now())
-  updatedAt         DateTime               @updatedAt
-  profileId         String?                @unique
-  fullName          String                 @default("")
-  isVerified        Boolean                @default(false)
-  verifyCode        String?
-  verifyCodeExpiry  DateTime?
-  blogs             Blog[]
-  donationsGiven    BloodDonationHistory[] @relation("Donor")
-  donationsReceived BloodDonationHistory[] @relation("Recipient")
-  bloodRequests     BloodRequest[]         @relation("Requester")
-  events            Event[]
-  profile           UserProfile?           @relation(fields: [profileId], references: [id])
+  id                     String                 @id @default(uuid())
+  username               String                 @unique
+  password               String
+  email                  String                 @unique
+  status                 UserStatus             @default(ACTIVE)
+  role                   UserRole
+  isDeleted              Boolean                @default(false)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  profileId              String?                @unique
+  fullName               String                 @default("")
+  isVerified             Boolean                @default(false)
+  verifyCode             String?
+  verifyCodeExpiry       DateTime?
+  blogs                  Blog[]
+  donationsGiven         BloodDonationHistory[] @relation("Donor")
+  donationsReceived      BloodDonationHistory[] @relation("Recipient")
+  bloodRequests          BloodRequest[]         @relation("Requester")
+  events                 Event[]
+  notificationsCreatedBy Notification[]         @relation("NotificationsCreatedBy")
+  notificationsSendTo    Notification[]         @relation("NotificationsSendTo")
+  profile                UserProfile?           @relation(fields: [profileId], references: [id])
 
   @@map("Users")
 }

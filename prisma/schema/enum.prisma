@@ -31,3 +31,8 @@ enum DonationStatus {
   IN_PROGRESS
   CONFIRMED
 }
+
+enum NotificationStatus {
+  EVERYONE
+  SPECIFIC
+}
