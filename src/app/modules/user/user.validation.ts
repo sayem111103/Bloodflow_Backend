@@ -49,6 +49,15 @@ const updateMyProfileValidation = z
       path: ["body"],
     },
   );
+
+  const updateUserByAdminSchema = z.object({
+    body: z.object({
+      status: z.enum(["ACTIVE", "BLOCK"]).optional(),
+      isVerified: z.boolean().optional(),
+    }),
+  });
+
+
 const verifyUserValidationSchema = z.object({
   body: z.object({
     email: z.email({ message: "Invalid email" }),
@@ -67,6 +76,7 @@ const resendVerificationCodeValidationSchema = z.object({
 export const userValidation = {
   userValidationSchema,
   updateMyProfileValidation,
+  updateUserByAdminSchema,
   verifyUserValidationSchema,
   resendVerificationCodeValidationSchema,
 };

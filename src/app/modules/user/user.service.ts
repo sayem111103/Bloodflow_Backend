@@ -223,6 +223,23 @@ const updateMyProfile = async (
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
+  const updateUserByAdmin = async (
+    userId: string,
+    payload: { status?: "ACTIVE" | "BLOCK"; isVerified?: boolean },
+  ) => {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+    }
+
+    const result = await prisma.user.update({
+      where: { id: userId },
+      data: payload,
+    });
+
+    const { password, ...rest } = result;
+    return rest;
+  };
 
   // Verify current password
   const passwordMatched = await isPasswordMatched(
@@ -323,6 +340,24 @@ const updateMyProfile = async (
   });
 
   return result;
+};
+
+const updateUserByAdmin = async (
+  userId: string,
+  payload: { status?: "ACTIVE" | "BLOCK"; isVerified?: boolean },
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: payload,
+  });
+
+  const { password, ...rest } = result;
+  return rest;
 };
 
 const resendVerificationCodeIntoDB = async (email: string) => {
@@ -475,6 +510,7 @@ export const userServices = {
   createUserIntoDB,
   getMe,
   updateMyProfile,
+  updateUserByAdmin,
   verifyUserIntoDB,
   resendVerificationCodeIntoDB,
   getAllUsersFromDB,

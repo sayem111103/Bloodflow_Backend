@@ -1,0 +1,10 @@
+model ContactMessage {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  message    String
+  isResolved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("ContactMessages")
+}

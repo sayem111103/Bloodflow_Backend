@@ -17,3 +17,18 @@ export const resendVerificationLimiter = rateLimit({
     res.status(options.statusCode).json(options.message);
   },
 });
+
+export const contactFormLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 contact submissions per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    statusCode: httpStatus.TOO_MANY_REQUESTS,
+    message: "Too many messages sent. Please try again after 15 minutes.",
+  },
+  handler: (req, res, next, options) => {
+    res.status(options.statusCode).json(options.message);
+  },
+});

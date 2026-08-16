@@ -60,6 +60,19 @@ const updateMyProfile: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserByAdmin: RequestHandler = catchAsync(async (req, res) => {
+  const result = await userServices.updateUserByAdmin(
+    req.params.id as string,
+    req.body,
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "User updated successfully",
+    data: result,
+  });
+});
+
 const verifyUser: RequestHandler = catchAsync(async (req, res) => {
   const result = await userServices.verifyUserIntoDB(req.body);
   sendResponse(res, {
@@ -145,6 +158,7 @@ export const userController = {
   adminCreateUser,
   getMe,
   updateMyProfile,
+  updateUserByAdmin,
   verifyUser,
   resendVerificationCode,
   getAllUsers,

@@ -66,4 +66,10 @@ router.get("/:id", auth(UserRole.ADMIN), userController.getSingleUser);
 
 router.delete("/:id", auth(UserRole.ADMIN), userController.deleteUser);
 
+router.patch(
+  "/:id/admin-update",
+  auth(UserRole.ADMIN),
+  validation(userValidation.updateUserByAdminSchema),
+  userController.updateUserByAdmin,
+);
 export const userRoute = router;
