@@ -67,6 +67,7 @@ router.post(
   bloodController.verifyDonationOtp,
 );
 
+router.get("/get-latest-five", bloodController.getLatestFive);
 router.get(
   "/my-pending-donations/:id",
   auth(
@@ -123,6 +124,5 @@ router.post(
 );
 
 router.get("/:id/get-single", bloodController.getBloodRequestById);
-router.get("/get-latest-five", bloodController.getLatestFive);
 
 export const bloodRequestRoute = router;
