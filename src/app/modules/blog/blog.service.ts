@@ -76,10 +76,24 @@ const deleteBlog = async (
   return null;
 };
 
+const getLatestFiveBlog = async () => {
+  const result = await prisma.blog.findMany({
+    where: {},
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      title: true,
+      author: { select: { fullName: true } },
+    },
+  });
+  return result;
+};
 export const blogServices = {
   createBlog,
   getAllBlogs,
   getBlogById,
   updateBlog,
   deleteBlog,
+  getLatestFiveBlog
 };

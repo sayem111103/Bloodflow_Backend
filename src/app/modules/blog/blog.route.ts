@@ -9,6 +9,7 @@ const router = express.Router();
 
 // Public reads
 router.get("/", blogController.getAllBlogs);
+router.get("/get-latest-five", blogController.getLatestFiveBlog);
 router.get("/:id", blogController.getBlogById);
 
 // Staff-only writes — ownership enforced in the service layer

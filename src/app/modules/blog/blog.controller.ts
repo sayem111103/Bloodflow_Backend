@@ -50,12 +50,25 @@ const updateBlog: RequestHandler = catchAsync(async (req, res) => {
 });
 
 const deleteBlog: RequestHandler = catchAsync(async (req, res) => {
-  await blogServices.deleteBlog(req.params.id as string, req.user.id, req.user.role);
+  await blogServices.deleteBlog(
+    req.params.id as string,
+    req.user.id,
+    req.user.role,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Blog deleted successfully",
     data: null,
+  });
+});
+const getLatestFiveBlog: RequestHandler = catchAsync(async (req, res) => {
+  const result = await blogServices.getLatestFiveBlog();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Blog retrieved successfully",
+    data: result,
   });
 });
 
@@ -65,4 +78,5 @@ export const blogController = {
   getBlogById,
   updateBlog,
   deleteBlog,
+  getLatestFiveBlog,
 };
