@@ -4,12 +4,11 @@ import AppError from "../../error/AppError";
 import httpStatus from "http-status";
 import crypto from "crypto";
 
-const generateOTP = ()=>{
+const generateOTP = () => {
   const otp = crypto.randomInt(100000, 999999).toString();
   return otp;
-}
-const otp_ValidityDuration = 30 * 24 * 60 * 60 * 1000; 
-
+};
+const otp_ValidityDuration = 30 * 24 * 60 * 60 * 1000;
 
 const createBloodRequest = async (
   requesterId: string,
@@ -222,7 +221,7 @@ const getVerifyDonationOtp = async (
   });
 
   return result;
-};  
+};
 
 const getContributionsForRequest = async (
   requesterId: string,
@@ -423,6 +422,54 @@ const getMyPendingDonationById = async (
   return result;
 };
 
+const getLatestFiveDonor = async () => {
+  const result = await prisma.bloodDonationHistory.findMany({
+    where: {},
+    orderBy: { donationDate: "desc" },
+    take: 5,
+    include: {
+      donor: {
+        include: {
+          profile: {
+            omit: {
+              address: true,
+              dateOfBirth: true,
+              district: true,
+              gender: true,
+              guardianNumber: true,
+              id: true,
+              numberOfDonation: true,
+              phoneNumber: true,
+              state: true,
+              town: true,
+            },
+          },
+        },
+        omit: {
+          verifyCodeExpiry: true,
+          createdAt: true,
+          email: true,
+          id: true,
+          isVerified: true,
+          isDeleted: true,
+          profileId: true,
+          password: true,
+          resetPasswordExpiry: true,
+          resetPasswordToken: true,
+          role: true,
+          updatedAt: true,
+          status: true,
+          verifyCode: true,
+          username: true,
+        },
+      },
+    },
+    omit: { id: true, otp: true, otpExpiresAt: true },
+  });
+
+  return result;
+};
+
 export const bloodServices = {
   createBloodRequest,
   getAllPendingRequests,
@@ -437,4 +484,5 @@ export const bloodServices = {
   getMyContribution,
   getMyPendingDonationById,
   getMyRequestById,
+  getLatestFiveDonor,
 };

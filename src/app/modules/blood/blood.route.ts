@@ -124,5 +124,6 @@ router.post(
 );
 
 router.get("/:id", bloodController.getBloodRequestById);
+router.get("/get-latest-five", bloodController.getLatestFive);
 
 export const bloodRequestRoute = router;

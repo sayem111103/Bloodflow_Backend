@@ -13,6 +13,7 @@ type CreateMessagePayload = {
  * user's request — the message is already safely stored in the DB.
  */
 const forwardToN8n = async (payload: CreateMessagePayload & { id: string }) => {
+  console.log(payload)
   if (!config.n8n_contact_webhook_url) {
     console.warn("N8N_CONTACT_WEBHOOK_URL is not set — skipping n8n forward.");
     return;

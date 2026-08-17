@@ -5,10 +5,7 @@ import httpStatus from "http-status";
 import { bloodServices } from "./blood.service";
 
 const createBloodRequest: RequestHandler = catchAsync(async (req, res) => {
-  const result = await bloodServices.createBloodRequest(
-    req.user.id,
-    req.body,
-  );
+  const result = await bloodServices.createBloodRequest(req.user.id, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -29,7 +26,9 @@ const BloodRequest: RequestHandler = catchAsync(async (req, res) => {
 });
 
 const getBloodRequestById = catchAsync(async (req, res) => {
-  const result = await bloodServices.getBloodRequestById(req.params.id as string);
+  const result = await bloodServices.getBloodRequestById(
+    req.params.id as string,
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -161,6 +160,16 @@ const getMyPendingDonationById: RequestHandler = catchAsync(
   },
 );
 
+const getLatestFive: RequestHandler = catchAsync(async (req, res) => {
+  const result = await bloodServices.getLatestFiveDonor();
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "get latest blood donor retrieved successfully",
+    data: result,
+  });
+});
+
 export const bloodController = {
   BloodRequest,
   getBloodRequestById,
@@ -175,5 +184,5 @@ export const bloodController = {
   getMyContribution,
   getMyPendingDonationById,
   getMyRequestById,
+  getLatestFive,
 };
-  
