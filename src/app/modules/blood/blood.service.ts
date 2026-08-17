@@ -427,46 +427,22 @@ const getLatestFiveDonor = async () => {
     where: {},
     orderBy: { donationDate: "desc" },
     take: 5,
-    include: {
+    select: {
+      id: true,
+      donationDate: true,
       donor: {
-        include: {
+        select: {
+          fullName: true,
           profile: {
-            omit: {
-              address: true,
-              dateOfBirth: true,
-              district: true,
-              gender: true,
-              guardianNumber: true,
-              id: true,
-              numberOfDonation: true,
-              phoneNumber: true,
-              state: true,
-              town: true,
+            select: {
+              bloodGroup: true,
+              img: true,
             },
           },
         },
-        omit: {
-          verifyCodeExpiry: true,
-          createdAt: true,
-          email: true,
-          id: true,
-          isVerified: true,
-          isDeleted: true,
-          profileId: true,
-          password: true,
-          resetPasswordExpiry: true,
-          resetPasswordToken: true,
-          role: true,
-          updatedAt: true,
-          status: true,
-          verifyCode: true,
-          username: true,
-        },
       },
     },
-    omit: { id: true, otp: true, otpExpiresAt: true },
   });
-
   return result;
 };
 

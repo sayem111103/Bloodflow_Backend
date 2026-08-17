@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get("/pending", bloodController.BloodRequest);
 
-router.get("/completed-count", bloodController.getCompletedRequestsCount); 
+router.get("/completed-count", bloodController.getCompletedRequestsCount);
 
 router.get(
   "/my-donations",
@@ -110,7 +110,6 @@ router.get(
   bloodController.getMyContribution,
 );
 
-
 router.post(
   "/:id/accept",
   auth(
@@ -123,7 +122,7 @@ router.post(
   bloodController.acceptBloodRequest,
 );
 
-router.get("/:id", bloodController.getBloodRequestById);
+router.get("/:id/get-single", bloodController.getBloodRequestById);
 router.get("/get-latest-five", bloodController.getLatestFive);
 
 export const bloodRequestRoute = router;
