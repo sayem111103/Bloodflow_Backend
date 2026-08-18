@@ -460,7 +460,12 @@ const getDonorById = async (id: string) => {
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Donor not found!");
   }
-  return result;
+
+  const pendingRequests = await prisma.bloodDonationHistory.count({
+    where: { donorId: id, status: "IN_PROGRESS" },
+  });
+
+  return { ...result, pendingRequests };
 };
 
 const getSingleUserFromDB = async (id: string) => {
