@@ -32,3 +32,12 @@ export const contactFormLimiter = rateLimit({
     res.status(options.statusCode).json(options.message);
   },
 });
+
+export const donationInitiateLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, statusCode: httpStatus.TOO_MANY_REQUESTS, message: "Too many donation attempts. Please try again in a few minutes." },
+  handler: (req, res, next, options) => { res.status(options.statusCode).json(options.message); },
+});

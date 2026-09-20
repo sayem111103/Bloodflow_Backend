@@ -6,6 +6,7 @@ import { blogRoute } from "../modules/blog/blog.route";
 import { eventRoute } from "../modules/event/event.route";
 import { notificationRoute } from "../modules/notification/notification.route";
 import { contactRoute } from "../modules/contact/contact.route";
+import { donationRoute } from "../modules/donation/donation.route";
 
 const router = Router();
 const moduleRoute = [
@@ -36,7 +37,12 @@ const moduleRoute = [
   {
     path: "/contact",
     route: contactRoute
+  },
+  {
+    path: "/donations",
+    route: donationRoute
   }
+  
 ];
 
 moduleRoute.forEach((routeData) => router.use(routeData.path, routeData.route));

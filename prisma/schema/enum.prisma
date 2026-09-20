@@ -36,3 +36,11 @@ enum NotificationStatus {
   EVERYONE
   SPECIFIC
 }
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+}
