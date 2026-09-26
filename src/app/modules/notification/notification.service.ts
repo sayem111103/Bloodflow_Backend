@@ -102,6 +102,7 @@ const deleteOldNotifications = async () => {
   return result.count;
 };
 
+
 export const notificationServices = {
   createNotification,
   getMyNotifications,

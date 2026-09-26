@@ -48,7 +48,7 @@
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "nodemon": "^3.1.14",
-    "prisma": "^8.0.0-rc.14",
+    "prisma": "^7.9.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2"

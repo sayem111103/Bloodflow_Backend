@@ -13,7 +13,24 @@ const createEvent = async (
     eventDate: Date;
   },
 ) => {
-  return prisma.event.create({ data: { ...payload, organizerId } });
+  const result = await prisma.$transaction(async (tx) => {
+    const event = await tx.event.create({
+      data: { ...payload, organizerId },
+    });
+
+    await tx.notification.create({
+      data: {
+        message: `New event: "${event.title}" on ${new Date(event.eventDate).toLocaleDateString()} at ${event.location}.`,
+        createdById: organizerId,
+        status: "EVERYONE",
+        link: `/events/${event.id}`,
+      },
+    });
+
+    return event;
+  });
+
+  return result;
 };
 
 const getAllEvents = async () => {
