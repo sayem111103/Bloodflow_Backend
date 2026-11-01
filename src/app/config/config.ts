@@ -14,6 +14,7 @@ export const config = {
   refresh_secret: process.env.REFRESH_TOKEN_SECRET,
   refresh_expires: process.env.REFRESH_TOKEN_EXPIRES_IN,
   n8n_contact_webhook_url: process.env.N8N_CONTACT_WEBHOOK_URL,
+  opencage_api_key: process.env.OPENCAGE_API_KEY,
   ssl: {
     store_id: process.env.SSLCOMMERZ_STORE_ID,
     store_passwd: process.env.SSLCOMMERZ_STORE_PASSWD,

@@ -5,6 +5,7 @@ import { notificationValidation } from "./notification.validation.js";
 import auth from "../../middleware/auth.js";
 import { UserRole } from "../../../generated/client.js";
 import cronAuth from "../../middleware/cronAuth.js";
+import { nearbyLimiter } from "../../lib/ratelimiter.js";
 
 
 const router = express.Router();
@@ -52,4 +53,11 @@ router.get(
   notificationController.cleanupOldNotifications,
 );
 
+router.post(
+  "/notify-nearby",
+  auth(...ALL_ROLES),
+  nearbyLimiter,
+  validation(notificationValidation.notifyNearbySchema),
+  notificationController.notifyNearbyDonors,
+);
 export const notificationRoute = router;

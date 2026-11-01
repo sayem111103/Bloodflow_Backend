@@ -80,6 +80,19 @@ const cleanupOldNotifications: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+const notifyNearbyDonors: RequestHandler = catchAsync(async (req, res) => {
+  const result = await notificationServices.notifyNearbyDonors(
+    req.user.id,
+    req.body,
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `Notified ${result.notified} donor(s)`,
+    data: result,
+  });
+});
+
 export const notificationController = {
   createNotification,
   getMyNotifications,
@@ -88,4 +101,5 @@ export const notificationController = {
   markAllAsRead,
   cleanupOldNotifications,
   notifyDonors,
+  notifyNearbyDonors,
 };

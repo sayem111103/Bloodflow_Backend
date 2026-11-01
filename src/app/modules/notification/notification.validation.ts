@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NotificationStatus } from "../../../generated/client.js";
+import { BloodGroup, NotificationStatus } from "../../../generated/client.js";
 
 const createNotificationSchema = z.object({
   body: z
@@ -24,8 +24,18 @@ const notifyDonorsSchema = z.object({
   }),
 });
 
+const notifyNearbySchema = z.object({
+  body: z.object({
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+    bloodGroup: z.nativeEnum(BloodGroup),
+    requestId: z.string().uuid().optional(),
+    message: z.string().min(1).max(300).optional(),
+  }),
+});
 
 export const notificationValidation = { 
     createNotificationSchema,
-    notifyDonorsSchema 
+    notifyDonorsSchema,
+    notifyNearbySchema
 };
